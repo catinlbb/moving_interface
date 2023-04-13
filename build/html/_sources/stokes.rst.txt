@@ -1,0 +1,101 @@
+===============================
+Stokes方程界面问题有限元方法
+===============================
+
+Stokes方程
+========================
+.. math::
+    \frac{\partial \mathbf{u}}{\partial t}
+    +\mathbf{u}\cdot \nabla \mathbf{u}
+    -\nu\Delta \mathbf{u}=\mathbf{f}
+    \quad \mbox{in}\, \Omega_t
+    \\
+    \partial_{\mathbf{n}}\mathbf{u}=0
+    \quad \mbox{on}\,\Gamma_t
+    \\
+    \mathbf{u}(0)=\mathbf{u}_0
+    \quad \mbox{in} \,\Omega_0
+
+用Lagrange坐标，Stokes方程是对流体微团列的Newton第二运动定律。所以有
+
+.. math::
+    \frac{d \mathbf{u}}{d t}
+    -\nu\Delta \mathbf{u}=\mathbf{f}
+
+其中
+
+.. math::
+    \frac{d \mathbf{u}}{d t}=
+    \frac{\partial \mathbf{u}}{\partial t}
+    +\mathbf{u}\cdot \nabla \mathbf{u}
+
+是随体导数，也称为物质导数。
+
+流映射（flow map）
+===========================
+流体微团沿着特征线运功
+
+.. math::
+    :label: characteristic-line
+
+     &\frac{d \mathbf{X}}{d t}
+     =\mathbf{u}(\mathbf{X}(t),t)
+     \\&
+     \mathbf{X}(0)=\mathbf{x}_0
+
+设 :math:`0\leq t_1 \leq t_2 \leq \cdots \leq t_N=T` 为 :math:`[0,T]` 区间上的一个剖分，则时间方向的步长为
+ :math:`\tau=T/N`. 记从区域 :math:`\Omega_{t_m}` 到区域 :math:`\Omega_{t_n}` 的流映射 
+ :math:`\mathbf{X}^{m,n}:=\mathbf{X}(t_n;t_m, \cdot)` (:math:`0\leq m \leq n \leq N`)
+ 为以下常微分方程的解
+
+.. math::
+
+     &\frac{d \mathbf{X}}{d t}
+     =\mathbf{u}(\mathbf{X}(t),t)
+     \\&
+     \mathbf{X}(t_m)=\mathbf{x}_m
+
+:math:`\mathbf{X}^{m,n}` 的逆映射记为 :math:`\mathbf{X}^{n,m}:=(\mathbf{X}^{m,n})^{-1}`
+
+
+
+半离散格式
+=======================================
+
+用向后微分公式来离散时间方向（4阶BDF格式），可以得到：
+
+.. math::
+    \frac{25}{12}\mathbf{u}^n-\tau\nu\Delta \mathbf{u}^n
+    =\tau \mathbf{f}^n-\sum^4_{i=1}a_i\mathbf{u}^{n-i}
+    \\
+    (a_1,a_2,a_3,a_4)=(-4,3,-4/3,1/4)
+
+注意到在 :math:`t_n` 时刻处在 :math:`x` 位置的流体微团，在前面的时刻 :math:`t_{n-i}, i = 1,2,3,4` 并不在 :math:`x`。
+我们需要知道这个流体微团在前面时刻的位置，从而得到 :math:`\mathbf{u}_{n-i}`. 这就需要求解特征线方程 :eq:`characteristic-line`.
+因为要从 :math:`t_n` 时刻递推到 :math:`t_{n-i}` 时刻，所以用一个小技巧，令 :math:`s=t_n-t`，改写 :eq:`characteristic-line` 
+变成一个描述时间倒着演化的方程。记 :math:`\mathbf{Y}(s)=\mathbf{X}(t_n-s)=\mathbf{X}(t)` ，则 :math:`\mathbf{Y}(s)` 满足
+方程
+
+.. math::
+     &\frac{d \mathbf{Y}(s)}{d s}
+     =-\mathbf{u}(\mathbf{Y}(s),t_n-s)
+     \\&
+     \mathbf{Y}(0)=\mathbf{x}_n
+
+可以用4阶Runge-Kutta格式来求解这个常微分方程。
+
+利用流映射，可以得到半离散数值格式为
+
+.. math::
+    \frac{25}{12}\mathbf{u}^n-\tau\nu\Delta \mathbf{u}^n
+    =\tau \mathbf{f}^n-\sum^4_{i=1}a_i\mathbf{u}^{n-i}\circ \mathbf{X}^{n,n-i}
+    \quad \mbox{in} \, \Omega^n
+    \\
+    \partial_{\mathbf{n}}\mathbf{u}^n=0
+    \quad \mbox{on}\,\Gamma^n  
+
+
+Stokes方程的有限元离散
+======================================
+
+

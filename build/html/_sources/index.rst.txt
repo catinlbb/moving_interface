@@ -11,17 +11,17 @@
    :caption: 基础数值算法:
    
    spline
-   
-
-
+   常微分方程数值格式 <ode>
 
 
 .. toctree::
    :maxdepth: 2
-   :caption: 流体计算
+   :caption: 多相流界面问题
 
-   ossen
+   Ossen问题                  <ossen>
+   Stokes方程界面问题有限元方法 <stokes>
 
+   
 
 .. toctree::
    :maxdepth: 2
