@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stokes方程界面问题有限元方法 &mdash; fuildDoc v1 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="求解样条插值简单测试例子(圆周上4点测试)" href="test4PointsSimpleCase.html" />
+    <link rel="prev" title="ossen方程有限元方法" href="ossen.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            fuildDoc
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">基础数值算法:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="spline.html">样条插值</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ode.html">常微分方程数值格式</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">多相流界面问题</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="ossen.html">Ossen问题</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Stokes方程界面问题有限元方法</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id1">Stokes方程</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#flow-map">流映射（flow map）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id2">半离散格式</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id3">Stokes方程的有限元离散</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">单元测试:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="test4PointsSimpleCase.html">求解样条插值简单测试例子(圆周上4点测试)</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">fuildDoc</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Stokes方程界面问题有限元方法</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/stokes.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="stokes">
+<h1>Stokes方程界面问题有限元方法<a class="headerlink" href="#stokes" title="Permalink to this heading"></a></h1>
+<section id="id1">
+<h2>Stokes方程<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h2>
+<div class="math">
+<p><img src="_images/math/d1c3279728957da72b4f7ccac44bbbd53cf9d27c.png" alt="\frac{\partial \mathbf{u}}{\partial t}
++\mathbf{u}\cdot \nabla \mathbf{u}
+-\nu\Delta \mathbf{u}=\mathbf{f}
+\quad \mbox{in}\, \Omega_t
+\\
+\partial_{\mathbf{n}}\mathbf{u}=0
+\quad \mbox{on}\,\Gamma_t
+\\
+\mathbf{u}(0)=\mathbf{u}_0
+\quad \mbox{in} \,\Omega_0"/></p>
+</div><p>用Lagrange坐标，Stokes方程是对流体微团列的Newton第二运动定律。所以有</p>
+<div class="math">
+<p><img src="_images/math/b4cc82f709d10b7b2e2f22f509405d1337356011.png" alt="\frac{d \mathbf{u}}{d t}
+-\nu\Delta \mathbf{u}=\mathbf{f}"/></p>
+</div><p>其中</p>
+<div class="math">
+<p><img src="_images/math/8b2e914eea2a299abb725e050f4411cb162955ef.png" alt="\frac{d \mathbf{u}}{d t}=
+\frac{\partial \mathbf{u}}{\partial t}
++\mathbf{u}\cdot \nabla \mathbf{u}"/></p>
+</div><p>是随体导数，也称为物质导数。</p>
+</section>
+<section id="flow-map">
+<h2>流映射（flow map）<a class="headerlink" href="#flow-map" title="Permalink to this heading"></a></h2>
+<p>流体微团沿着特征线运功</p>
+<div class="math" id="equation-characteristic-line">
+<p><span class="eqno">(1)<a class="headerlink" href="#equation-characteristic-line" title="Permalink to this equation"></a></span><img src="_images/math/3b57c44ad5ba9b705516df36413aac55e0813972.png" alt="&amp;\frac{d \mathbf{X}}{d t}
+ =\mathbf{u}(\mathbf{X}(t),t)
+ \\&amp;
+ \mathbf{X}(0)=\mathbf{x}_0"/></p>
+</div><dl class="simple">
+<dt>设 <img class="math" src="_images/math/ba5b76815a76edfdd5dd99e2290f785f6647998d.png" alt="0\leq t_1 \leq t_2 \leq \cdots \leq t_N=T"/> 为 <img class="math" src="_images/math/dc80520846361c8029d8f37876682d028d88dc84.png" alt="[0,T]"/> 区间上的一个剖分，则时间方向的步长为</dt><dd><p><img class="math" src="_images/math/f3dea0b652c59cb15677beae7cd9edde54464fa2.png" alt="\tau=T/N"/>. 记从区域 <img class="math" src="_images/math/1bb30ec33a3bfa3adae02401ad84f2913cb10370.png" alt="\Omega_{t_m}"/> 到区域 <img class="math" src="_images/math/0a4e50b48af9e84a295cd6afff401abe81232ed5.png" alt="\Omega_{t_n}"/> 的流映射
+<img class="math" src="_images/math/17782280b300727882d68fa216dbca37deaf77f7.png" alt="\mathbf{X}^{m,n}:=\mathbf{X}(t_n;t_m, \cdot)"/> (<img class="math" src="_images/math/81a98e0ead08e4ad37b2c9a1bb805767864ee02b.png" alt="0\leq m \leq n \leq N"/>)
+为以下常微分方程的解</p>
+</dd>
+</dl>
+<div class="math">
+<p><img src="_images/math/e038e689866022514b48b7628b67c04f27910221.png" alt="&amp;\frac{d \mathbf{X}}{d t}
+=\mathbf{u}(\mathbf{X}(t),t)
+\\&amp;
+\mathbf{X}(t_m)=\mathbf{x}_m"/></p>
+</div><p><img class="math" src="_images/math/6f7c1f0a3c6d5b4599a84422436b42efe132ce0c.png" alt="\mathbf{X}^{m,n}"/> 的逆映射记为 <img class="math" src="_images/math/f8355a988f27c2639b8cb26aa7780706bedc4feb.png" alt="\mathbf{X}^{n,m}:=(\mathbf{X}^{m,n})^{-1}"/></p>
+</section>
+<section id="id2">
+<h2>半离散格式<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h2>
+<p>用向后微分公式来离散时间方向（4阶BDF格式），可以得到：</p>
+<div class="math">
+<p><img src="_images/math/f90c4de884d7a70a6ac84bfaba6619c1f08862ca.png" alt="\frac{25}{12}\mathbf{u}^n-\tau\nu\Delta \mathbf{u}^n
+=\tau \mathbf{f}^n-\sum^4_{i=1}a_i\mathbf{u}^{n-i}
+\\
+(a_1,a_2,a_3,a_4)=(-4,3,-4/3,1/4)"/></p>
+</div><p>注意到在 <img class="math" src="_images/math/747fbed09deea417cb22a2956e68ea9d4f9f13a7.png" alt="t_n"/> 时刻处在 <img class="math" src="_images/math/888f7c323ac0341871e867220ae2d76467d74d6e.png" alt="x"/> 位置的流体微团，在前面的时刻 <img class="math" src="_images/math/4593e2583ebe577f67ce88cbd580c011263efcfe.png" alt="t_{n-i}, i = 1,2,3,4"/> 并不在 <img class="math" src="_images/math/888f7c323ac0341871e867220ae2d76467d74d6e.png" alt="x"/>。
+我们需要知道这个流体微团在前面时刻的位置，从而得到 <img class="math" src="_images/math/381b9ec9eeef5e4dc927e906bb954d5ceaf2f737.png" alt="\mathbf{u}_{n-i}"/>. 这就需要求解特征线方程 <a class="reference internal" href="#equation-characteristic-line">(1)</a>.
+因为要从 <img class="math" src="_images/math/747fbed09deea417cb22a2956e68ea9d4f9f13a7.png" alt="t_n"/> 时刻递推到 <img class="math" src="_images/math/28d72cd60e33e3f9e1f30840e03bfd2a92a747e7.png" alt="t_{n-i}"/> 时刻，所以用一个小技巧，令 <img class="math" src="_images/math/302ec0bffa8cbfed9cc1199a13bff56d249328b9.png" alt="s=t_n-t"/>，改写 <a class="reference internal" href="#equation-characteristic-line">(1)</a>
+变成一个描述时间倒着演化的方程。记 <img class="math" src="_images/math/e8230898c0afe86d80f04c21fbef67a39dbfe7a9.png" alt="\mathbf{Y}(s)=\mathbf{X}(t_n-s)=\mathbf{X}(t)"/> ，则 <img class="math" src="_images/math/d79ddb7a5f1b54b60180b989d2e2a828bade1344.png" alt="\mathbf{Y}(s)"/> 满足
+方程</p>
+<div class="math">
+<p><img src="_images/math/6da65f460070032081720a1f2866f196a3b1da73.png" alt="&amp;\frac{d \mathbf{Y}(s)}{d s}
+=-\mathbf{u}(\mathbf{Y}(s),t_n-s)
+\\&amp;
+\mathbf{Y}(0)=\mathbf{x}_n"/></p>
+</div><p>可以用4阶Runge-Kutta格式来求解这个常微分方程。</p>
+<p>利用流映射，可以得到半离散数值格式为</p>
+<div class="math">
+<p><img src="_images/math/1d1699bbd3203c308874e563cfad459d329b57ba.png" alt="\frac{25}{12}\mathbf{u}^n-\tau\nu\Delta \mathbf{u}^n
+=\tau \mathbf{f}^n-\sum^4_{i=1}a_i\mathbf{u}^{n-i}\circ \mathbf{X}^{n,n-i}
+\quad \mbox{in} \, \Omega^n
+\\
+\partial_{\mathbf{n}}\mathbf{u}^n=0
+\quad \mbox{on}\,\Gamma^n"/></p>
+</div></section>
+<section id="id3">
+<h2>Stokes方程的有限元离散<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ossen.html" class="btn btn-neutral float-left" title="ossen方程有限元方法" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="test4PointsSimpleCase.html" class="btn btn-neutral float-right" title="求解样条插值简单测试例子(圆周上4点测试)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, XujingLi.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
